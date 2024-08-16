@@ -5,6 +5,7 @@ import com.employee.employeeException.NameNotFoundException;
 import com.employee.employeeentity.EmployeeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,13 +13,14 @@ import java.util.Map;
 
 @Repository
 public interface EmployeeRepository extends JpaRepository<EmployeeEntity,Integer> {
-  @Query(value="select e.gender,COUNT(e) from EmployeeEntity e where e.gender IN('Male','Female') GROUP BY e.gender")
+ // @Query("select e.gender,COUNT(e) from EmployeeEntity e where e.gender IN('Male','Female') GROUP BY e.gender")
+  @Query(value="select gender,count(*) from employee_details where gender in('Male','Female') group by gender",nativeQuery = true)
   public Map<String, Long> getMaleAndFemaleEmployees();
 
   @Query("select DISTINCT e.department from EmployeeEntity e")
   public List<String> getNameOfAllDepartments();
 
-  @Query(value = "select e.gender,AVG(e.age) from EmployeeEntity e where e.gender IN('Male','Female')GROUP BY e.gender")
+  @Query("select e.gender,AVG(e.age) from EmployeeEntity e where e.gender IN('Male','Female')GROUP BY e.gender")
   public Map<String,Double> averageAgeOfMaleAndFemaleEmployees();
 
   @Query(value="select e from EmployeeEntity e ORDER BY e.salary DESC")
@@ -51,7 +53,7 @@ public interface EmployeeRepository extends JpaRepository<EmployeeEntity,Integer
   @Query(value="select e from EmployeeEntity e ORDER BY e.yearOfJoining ASC LIMIT 1")
   public EmployeeEntity getOldestEmployee();
 
-  @Query(value="select * from employee_details",nativeQuery = true)
+  @Procedure(procedureName = "getAllEmployees")
   public List<EmployeeEntity> getAllEmployee();
 
 
